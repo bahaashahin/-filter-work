@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>تقييم الطلاب</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="p-4">
+
+  <div class="container">
+    <h2 class="mb-3">إدخال الأسماء دفعة واحدة</h2>
+
+    <textarea id="namesInput" class="form-control mb-3" placeholder="انسخ الأسماء هنا، كل اسم في سطر لوحده" rows="5"></textarea>
+    <button onclick="processNames()" class="btn btn-primary mb-4">إظهار الأسماء</button>
+
+    <h4>الفلترة حسب التقييم</h4>
+    <div class="mb-3">
+      <button onclick="filterTable('gold')" class="btn btn-outline-warning me-2">Gold</button>
+      <button onclick="filterTable('silver')" class="btn btn-outline-secondary me-2">Silver</button>
+      <button onclick="filterTable('bronze')" class="btn btn-outline-dark">Bronze</button>
+    </div>
+
+    <div class="mb-4">
+      <label for="filteredOutput" class="form-label">نتائج الفلترة:</label>
+      <textarea id="filteredOutput" class="form-control" rows="5" readonly></textarea>
+    </div>
+
+    <h4>الجدول</h4>
+    <table class="table table-bordered text-center">
+      <thead class="table-light">
+        <tr>
+          <th>الاسم</th>
+          <th>التقييم</th>
+        </tr>
+      </thead>
+      <tbody id="namesTableBody"></tbody>
+    </table>
+  </div>
+
+  <script>
+    const allData = [];
+
+    function processNames() {
+      const input = document.getElementById('namesInput').value.trim();
+      const names = input.split('\n').filter(name => name.trim() !== '');
+      const tbody = document.getElementById('namesTableBody');
+      tbody.innerHTML = '';
+      allData.length = 0;
+
+      names.forEach(name => {
+        const row = document.createElement('tr');
+
+        const nameCell = document.createElement('td');
+        nameCell.textContent = name;
+
+        const ratingCell = document.createElement('td');
+        const select = document.createElement('select');
+        select.className = 'form-select';
+        select.innerHTML = `
+          <option value="">اختر التقييم</option>
+          <option value="gold">Gold</option>
+          <option value="silver">Silver</option>
+          <option value="bronze">Bronze</option>
+        `;
+
+        // حدث عند التغيير
+        select.addEventListener('change', () => {
+          const entry = allData.find(item => item.name === name);
+          if (entry) entry.rating = select.value;
+        });
+
+        ratingCell.appendChild(select);
+        row.appendChild(nameCell);
+        row.appendChild(ratingCell);
+        tbody.appendChild(row);
+
+        allData.push({ name: name, rating: '' });
+      });
+    }
+
+    function filterTable(type) {
+      const filtered = allData.filter(item => item.rating === type);
+      const output = filtered.map(item => item.name).join('\n');
+      document.getElementById('filteredOutput').value = output;
+    }
+  </script>
+</body>
+</html>
