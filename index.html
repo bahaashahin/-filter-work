@@ -63,7 +63,7 @@
           <option value="bronze">Bronze</option>
         `;
 
-        // حدث عند التغيير
+       
         select.addEventListener('change', () => {
           const entry = allData.find(item => item.name === name);
           if (entry) entry.rating = select.value;
